@@ -133,7 +133,7 @@ body {
 
 .today-budget {
   font-size: 10vw;
-  margin: 15vh 0 5vh 0;
+  margin: 10vh 0 5vh 0;
   text-align: center;
 }
 
@@ -167,4 +167,9 @@ li img {
 
 .coins {
   height: 25vh;
+}
+
+.budget {
+  font-size: 2vw;
+  color: #373535;
 }
