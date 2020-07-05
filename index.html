@@ -23,9 +23,22 @@
         </li>
       </ul>
     </div>
-    
-    <!-- <a id="openModal" href="javascript:void(0)" class="btn-push" onclick="next()">-</a> -->
-
+    <div class="buttons">
+      <a id="openModal" href="javascript:void(0)" class="minus-btn">-</a>
+    </div>
+    <section id="modalArea" class="modalArea">
+      <div id="modalBg" class="modalBg"></div>
+      <div class="modalWrapper">
+        <div class="modalContents">
+          <h1>いくら使いましたか？</h1>
+          <form id="budgetForm" name="budgetForm" onsubmit="return false;">
+            ¥<input id="budget" type="number" name="budget" placeholder="0">
+            <input type="submit" value="記録">
+          </form>
+        </div>
+        <div id="closeModal" class="closeModal">×</div>
+      </div>
+    </section>
   </body>
 </html>
 <script type="text/javascript" src="./script/budget.js"></script>
