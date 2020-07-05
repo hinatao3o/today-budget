@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./style/style.css">
+    <title>Today's budget - 1日の予算</title>
+  </head>
+  <body>
+    <div style="height: 100%;">
+      <p class="title fadein">Today's budget</p>
+      <p class="description fadein">このWebアプリケーションでは、1ヶ月の予算を設定して今日1日の予算を管理できます。</p>
+      <a id="openModal" href="javascript:void(0)" class="btn-push fadein" onclick="next()">TRY</a>
+    </div>
+    
+    <section id="modalArea" class="modalArea">
+      <div id="modalBg" class="modalBg"></div>
+      <div class="modalWrapper">
+        <div class="modalContents">
+          <h1>1ヶ月に使えるお金を設定しましょう！</h1>
+          <form id="budgetForm" class="" action="top.html" method="post">
+            ¥<input id="budget" type="number" name="budget" value="50000" placeholder="1ヶ月の予算（¥）">
+            <input type="submit" value="送信">
+          </form>
+        </div>
+        <div id="closeModal" class="closeModal">×</div>
+      </div>
+    </section>
+  </body>
+</html>
+<script type="text/javascript" src="./script/top.js"></script>
