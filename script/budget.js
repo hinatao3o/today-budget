@@ -157,7 +157,7 @@ function setCoins(todayBudget, baseDailyBudget) {
 
     // 1万円ごとに金のコインタワー
     limit = Math.floor(budget / 10000);
-    if (budget > 10000) {
+    if (budget >= 10000) {
       for (var j = 0; j < limit; j++) {
         budget = budget - 10000;
         var coinImg     = document.createElement('img');
