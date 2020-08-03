@@ -98,7 +98,7 @@ function saveTodayBudget(monthlyBudgets) {
 }
 
 // 使用した金額を予算から引いて保存
-function saveBudgetAfterUse(monthlyBudgets, useAmount) {
+async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
   const now   = new Date();
   const year  = now.getFullYear();
   const month = now.getMonth()+1;
@@ -107,16 +107,23 @@ function saveBudgetAfterUse(monthlyBudgets, useAmount) {
 
   monthlyBudgets[year][month]['dailyBudgets'][date] = monthlyBudgets[year][month]['dailyBudgets'][date] - useAmount;
   localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
-  // document.getElementById('todayBudget').innerText = '¥' + (todayBudget - num);
-  
-  var num = 1;
-  setInterval(function(){
-    if(num <= useAmount){
-      document.getElementById('todayBudget').innerText = '¥' + (todayBudget - num);
-      num++;
-    }
-  }, 1);
 
+  const button = document.getElementById('openModal');
+  const minus = new Promise((resolve, reject) => {
+    var num = 1;
+    setInterval(function(){
+      if(num <= useAmount){
+        document.getElementById('todayBudget').innerText = '¥' + (todayBudget - num);
+        num++;
+      } else {
+        resolve();
+      }
+    }, 1);
+  });
+  
+  button.style.opacity = 0;
+  await minus;
+  button.style.opacity = 1;
 }
 
 
