@@ -1,6 +1,4 @@
 if (localStorage.budget) window.location.href = 'index.html';
-// localStorage.clear();
-// console.log(localStorage);
 
 (function () {
   // モーダル

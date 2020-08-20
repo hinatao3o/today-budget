@@ -7,11 +7,26 @@
     <title>Today's budget - 1日の予算</title>
   </head>
   <body>
+    <nav>
+        <ul id="nav">
+          <li></li>
+          <li>
+            <a href="javascript:void('thank you.');">
+              <span id="deleteLastest">直近の記録を削除</span>
+            </a>
+          </li>
+          <li>
+            <a id="openChangeModal" href="javascript:void('sleepy.');">
+              <span>月の予算を変更</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    
     <span id="fallMoneyArea"></span>
-    <!-- <div class="money"></div> -->
 
     <div>
-      <p id="todayBudget" class="today-budget fadein"></p>
+      <p id="todayBudget" class="todayBudget fadein"></p>
     </div>
     <div>
       <ul class="col3">
@@ -27,7 +42,7 @@
       </ul>
     </div>
     <div class="buttons">
-      <a id="openModal" href="javascript:void(0)" class="minus-btn">-</a>
+      <a id="openModal" href="javascript:void(0)" class="minusBtn">-</a>
     </div>
     <section id="modalArea" class="modalArea">
       <div id="modalBg" class="modalBg"></div>
@@ -40,6 +55,20 @@
           </form>
         </div>
         <div id="closeModal" class="closeModal">×</div>
+      </div>
+    </section>
+    
+    <section id="changeModalArea" class="modalArea">
+      <div id="changeModalBg" class="modalBg"></div>
+      <div class="modalWrapper">
+        <div class="modalContents">
+          <h1>1ヶ月に使えるお金をいくらに変更しますか？</h1>
+          <form id="changeBudgetForm" action="top.html" method="post">
+            ¥<input id="changeBudget" type="number" name="budget" placeholder="1ヶ月の予算（¥）" min="1">
+            <input type="submit" value="変更">
+          </form>
+        </div>
+        <div id="closeChangeModal" class="closeModal">×</div>
       </div>
     </section>
   </body>

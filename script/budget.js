@@ -5,8 +5,8 @@ const year  = now.getFullYear();
 const month = now.getMonth()+1;
 const date  = now.getDate();
 const d     = new Date(year, month, 0).getDate();
-// localStorage.clear();
-// localStorage.setItem('budget', 50000);
+
+if (!localStorage['lastest']) document.getElementById('deleteLastest').style.display = 'none';
 
 const baseDailyBudget = Math.floor(localStorage['budget'] / d);
 var todayBudget = 0;
@@ -23,14 +23,13 @@ if (localStorage['monthlyBudgets']) {
   saveMonthlyBudget(baseDailyBudget);
   
   monthlyBudgets = JSON.parse(localStorage['monthlyBudgets']);
-  console.log(monthlyBudgets);
   todayBudget = saveTodayBudget(monthlyBudgets);
 }
 
 document.getElementById('todayBudget').innerText = '¥' + todayBudget;
 setCoins(todayBudget, baseDailyBudget);
 
-// モーダル
+// 予算使用ーダル
 const modalArea = document.getElementById('modalArea');
 const openModal = document.getElementById('openModal');
 const closeModal = document.getElementById('closeModal');
@@ -48,13 +47,56 @@ var form = document.querySelector("#budgetForm");
 form.addEventListener("submit", function(event) {
   modalArea.classList.toggle('is-show');
   document.querySelector("#budget").blur(); // 多重押下防止
+  
   var useAmount = document.querySelector("#budget").value;
   if (!useAmount) return false;
+  
   document.querySelector("#budget").value = '';
   saveBudgetAfterUse(monthlyBudgets, useAmount);
   todayBudget = monthlyBudgets[year][month]['dailyBudgets'][date];
+  
   setCoins(todayBudget, baseDailyBudget);
 });
+
+
+// 予算額変更モーダル 
+document.getElementById('changeBudget').value = localStorage['budget'];
+const changeModalArea = document.getElementById('changeModalArea');
+const openChangeModal = document.getElementById('openChangeModal');
+const closeChangeModal = document.getElementById('closeChangeModal');
+const changeModalBg = document.getElementById('changeModalBg');
+const toggleChangeModal = [openChangeModal,closeChangeModal,changeModalBg];
+
+for (let i=0, len=toggleChangeModal.length; i<len; i++) {
+  toggleChangeModal[i].onclick = function() {
+    changeModalArea.classList.toggle('is-show');
+  };
+}
+// 1ヶ月の予算を変更
+var changeForm = document.querySelector("#changeBudgetForm");
+changeForm.addEventListener("submit", function(event) {
+  changeModalArea.classList.toggle('is-show');
+  document.querySelector("#changeBudget").blur(); // 多重押下防止
+  
+  var newBudget = document.querySelector("#changeBudget").value;
+  if (!newBudget || newBudget < 1 || (newBudget == localStorage['budget'])) {
+    alert('適切な値を入力してください。');
+    return false;  
+  }
+  
+  var unused = Object.values(monthlyBudgets[year][month]['dailyBudgets']).reduce(function(prev, current){return prev+current});
+  var used = Math.floor(localStorage['budget'] / d)*d - unused;
+  console.log(used);
+  
+  localStorage.setItem('budget', newBudget);
+  var dailyBudget = Math.floor(localStorage['budget'] / d);
+  saveMonthlyBudget(dailyBudget);
+
+  monthlyBudgets = JSON.parse(localStorage['monthlyBudgets']); // 保存後取得し直す
+  monthlyBudgets[year][month]['dailyBudgets'][date] = monthlyBudgets[year][month]['dailyBudgets'][date] - used; // 変更前までに使用した分を引いて保存
+  localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
+});
+
 
 // 今月の予算保存
 function saveMonthlyBudget(dailyBudget) {
@@ -75,6 +117,7 @@ function saveMonthlyBudget(dailyBudget) {
   localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
 }
 
+
 // 今日の予算取得・保存
 function saveTodayBudget(monthlyBudgets) {
   dailyBudgets = monthlyBudgets[year][month]['dailyBudgets'];
@@ -91,12 +134,14 @@ function saveTodayBudget(monthlyBudgets) {
   return todayBudget;
 }
 
-// 使用した金額を予算から引いて保存
+
+// 使用した金額を予算から引いて保存&アニメーション
 async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
   var todayBudget = monthlyBudgets[year][month]['dailyBudgets'][date];
 
   monthlyBudgets[year][month]['dailyBudgets'][date] = monthlyBudgets[year][month]['dailyBudgets'][date] - useAmount;
-  localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
+  localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets)); // 使用後の予算保存
+  localStorage.setItem('lastest', useAmount); // 直近保存
 
   var timeOverFlg = false;
   const button = document.getElementById('openModal');
@@ -131,6 +176,7 @@ async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
       5000 : fiveThousandCnt,
       10000: tenThousandCnt,
     }
+    
     // お金のイラストを表示
     var fallMoneyArea = document.getElementById('fallMoneyArea');
     for (let key in moneyCnt) {
@@ -173,21 +219,23 @@ async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
         endCountDownFlg = true;
       }
     }, 1);
+    
+    // 一定時間以上はカウントダウンをスキップ
     setTimeout(function(){
       timeOverFlg = true;
       clearInterval(countDown);
       resolve();
     }, 2500);
   });
-  button.style.display = 'none';
+  
+  button.style.display = 'none'; // マイナス処理が終わるまでボタンを非表示
   await minus;
   if (timeOverFlg) document.getElementById('todayBudget').innerText = '¥' + monthlyBudgets[year][month]['dailyBudgets'][date];
-  document.getElementById('todayBudget').style.opacity = 1;
   button.style.display = 'inline-block';
 }
 
 
-// コインの画像処理
+// コインタワーの画像処理
 function setCoins(todayBudget, baseDailyBudget) {
   for (var i = 1; i <= 3; i++) {
     var budgetEle = document.getElementById('budget'+i);
