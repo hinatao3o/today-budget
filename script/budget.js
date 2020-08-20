@@ -108,6 +108,11 @@ document.getElementById('deleteLastest').onclick = function() {
   }
 };
 
+setInterval(function(){
+  var date = new Date;
+  if (date.getMinutes() == 0 && date.getHours() == 0 && date.getSeconds() == 0) location.reload()
+},1000);
+
 
 // 今月の予算保存
 function saveMonthlyBudget(dailyBudget) {
