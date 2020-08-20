@@ -97,6 +97,17 @@ changeForm.addEventListener("submit", function(event) {
   localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
 });
 
+// 直近の利用記録分の予算を戻す
+document.getElementById('deleteLastest').onclick = function() {
+  if (!localStorage['lastest']) return false;
+  if (confirm('1つ前の利用記録分の予算を戻しますか？')) {
+    monthlyBudgets[year][month]['dailyBudgets'][date] += Number(localStorage['lastest']);
+    localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
+    localStorage.setItem('lastest', ''); // 直近の利用記録削除
+    location.reload();
+  }
+};
+
 
 // 今月の予算保存
 function saveMonthlyBudget(dailyBudget) {
@@ -232,6 +243,7 @@ async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
   await minus;
   if (timeOverFlg) document.getElementById('todayBudget').innerText = '¥' + monthlyBudgets[year][month]['dailyBudgets'][date];
   button.style.display = 'inline-block';
+  document.getElementById('deleteLastest').style.display = 'inline-block';
 }
 
 
