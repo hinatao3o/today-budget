@@ -1,10 +1,10 @@
 if (!localStorage['budget']) window.location.href = 'top.html';
 
-const now   = new Date();       
+const now   = new Date();
 const year  = now.getFullYear();
 const month = now.getMonth()+1;
-const date = now.getDate();
-const d = new Date(year, month, 0).getDate();
+const date  = now.getDate();
+const d     = new Date(year, month, 0).getDate();
 // localStorage.clear();
 // localStorage.setItem('budget', 50000);
 
@@ -23,6 +23,7 @@ if (localStorage['monthlyBudgets']) {
   saveMonthlyBudget(baseDailyBudget);
   
   monthlyBudgets = JSON.parse(localStorage['monthlyBudgets']);
+  console.log(monthlyBudgets);
   todayBudget = saveTodayBudget(monthlyBudgets);
 }
 
@@ -36,7 +37,7 @@ const closeModal = document.getElementById('closeModal');
 const modalBg = document.getElementById('modalBg');
 const toggle = [openModal,closeModal,modalBg];
 
-for(let i=0, len=toggle.length ; i<len ; i++){
+for (let i=0, len=toggle.length; i<len; i++) {
   toggle[i].onclick = function() {
     modalArea.classList.toggle('is-show');
   };
@@ -46,7 +47,10 @@ for(let i=0, len=toggle.length ; i<len ; i++){
 var form = document.querySelector("#budgetForm");
 form.addEventListener("submit", function(event) {
   modalArea.classList.toggle('is-show');
+  document.querySelector("#budget").blur(); // 多重押下防止
   var useAmount = document.querySelector("#budget").value;
+  if (!useAmount) return false;
+  document.querySelector("#budget").value = '';
   saveBudgetAfterUse(monthlyBudgets, useAmount);
   todayBudget = monthlyBudgets[year][month]['dailyBudgets'][date];
   setCoins(todayBudget, baseDailyBudget);
@@ -54,11 +58,6 @@ form.addEventListener("submit", function(event) {
 
 // 今月の予算保存
 function saveMonthlyBudget(dailyBudget) {
-  const now   = new Date();       
-  const year  = now.getFullYear();
-  const month = now.getMonth()+1;
-  const d     = new Date(year, month, 0).getDate();
-  
   var dailyBudgets = {};
   for (var i = 1; i <= d; i++) {
     dailyBudgets[i] = dailyBudget;
@@ -78,11 +77,6 @@ function saveMonthlyBudget(dailyBudget) {
 
 // 今日の予算取得・保存
 function saveTodayBudget(monthlyBudgets) {
-  const now   = new Date();       
-  const year  = now.getFullYear();
-  const month = now.getMonth()+1;
-  const date  = now.getDate();
-  
   dailyBudgets = monthlyBudgets[year][month]['dailyBudgets'];
   for (var i = 1; i <= date; i++) {
     todayBudget += dailyBudgets[i];
@@ -99,39 +93,102 @@ function saveTodayBudget(monthlyBudgets) {
 
 // 使用した金額を予算から引いて保存
 async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
-  const now   = new Date();
-  const year  = now.getFullYear();
-  const month = now.getMonth()+1;
-  const date  = now.getDate();
   var todayBudget = monthlyBudgets[year][month]['dailyBudgets'][date];
 
   monthlyBudgets[year][month]['dailyBudgets'][date] = monthlyBudgets[year][month]['dailyBudgets'][date] - useAmount;
   localStorage.setItem('monthlyBudgets', JSON.stringify(monthlyBudgets));
 
+  var timeOverFlg = false;
   const button = document.getElementById('openModal');
   const minus = new Promise((resolve, reject) => {
+    
+    var cntUseAmount = useAmount;
+    var tenThousandCnt = Math.floor(useAmount / 10000);
+    cntUseAmount %= 10000;
+    var fiveThousandCnt = Math.floor(cntUseAmount / 5000);
+    cntUseAmount %= 5000;
+    var thousandCnt = Math.floor(cntUseAmount / 1000);
+    cntUseAmount %= 1000;
+    var fiveHundredCnt = Math.floor(cntUseAmount / 500);
+    cntUseAmount %= 500;
+    var hundredCnt = Math.floor(cntUseAmount / 100);
+    cntUseAmount %= 100;
+    var fiftyCnt = Math.floor(cntUseAmount / 50);
+    cntUseAmount %= 50;
+    var tenCnt = Math.floor(cntUseAmount / 10);
+    cntUseAmount %= 10;
+    var fiveCnt = Math.floor(cntUseAmount / 5);
+    cntUseAmount %= 5;
+    
+    var moneyCnt = {
+      1    : cntUseAmount,
+      5    : fiveCnt,
+      10   : tenCnt,
+      50   : fiftyCnt,
+      100  : hundredCnt,
+      500  : fiveHundredCnt,
+      1000 : thousandCnt,
+      5000 : fiveThousandCnt,
+      10000: tenThousandCnt,
+    }
+    // お金のイラストを表示
+    var fallMoneyArea = document.getElementById('fallMoneyArea');
+    for (let key in moneyCnt) {
+      for (var i = 0; i < moneyCnt[key]; i++) {
+        var moneyImg        = document.createElement('img');
+        moneyImg.src        = './images/money_'+key+'.png';
+        moneyImg.id         = '1-'+i;
+        moneyImg.style.left =  Math.floor(Math.random() * (document.documentElement.clientWidth+1))+'px';
+        moneyImg.style.top  =  '-'+Math.floor(Math.random() * (101))+'px';
+        if (key >= 1000) moneyImg.classList.add('bill');
+        fallMoneyArea.appendChild(moneyImg);
+      }
+    }
+    
+    // お金のイラストふらせる
+    var top = 0;
+    var endFallFlg = false;
+    var endCountDownFlg = false;
+    var fallMoney = setInterval(function(){
+      for (var i = 0; i < fallMoneyArea.children.length; i++) {
+        fallMoneyArea.children[i].style.top = (parseFloat(fallMoneyArea.children[i].style.top) + 2.5) + "px";
+      }
+      if (document.documentElement.clientHeight < top) {
+        clearInterval(fallMoney);
+        fallMoneyArea.parentNode.replaceChild(fallMoneyArea.cloneNode(false), fallMoneyArea); // 削除
+        if (endCountDownFlg) resolve();
+        endFallFlg = true;
+      }
+      top += 2;
+    }, 1);
+    
+    // カウントダウン
     var num = 1;
-    setInterval(function(){
+    countDown = setInterval(function(){
       if(num <= useAmount){
         document.getElementById('todayBudget').innerText = '¥' + (todayBudget - num);
         num++;
       } else {
-        resolve();
+        if (endFallFlg) resolve();
+        endCountDownFlg = true;
       }
     }, 1);
+    setTimeout(function(){
+      timeOverFlg = true;
+      clearInterval(countDown);
+      resolve();
+    }, 2500);
   });
-  
-  button.style.opacity = 0;
+  button.style.display = 'none';
   await minus;
-  button.style.opacity = 1;
+  if (timeOverFlg) document.getElementById('todayBudget').innerText = '¥' + monthlyBudgets[year][month]['dailyBudgets'][date];
+  document.getElementById('todayBudget').style.opacity = 1;
+  button.style.display = 'inline-block';
 }
 
 
 // コインの画像処理
 function setCoins(todayBudget, baseDailyBudget) {
-  const now  = new Date();       
-  const date = now.getDate();
-  
   for (var i = 1; i <= 3; i++) {
     var budgetEle = document.getElementById('budget'+i);
     // 初期化（削除）
@@ -169,7 +226,6 @@ function setCoins(todayBudget, baseDailyBudget) {
         budget = budget - 10000;
         var coinImg     = document.createElement('img');
             coinImg.src = './images/coin_medal_tate_gold.png';
-            coinImg.alt = 'coin';
         coinsEle.appendChild(coinImg);
 
         cntCoins++;

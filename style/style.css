@@ -162,7 +162,7 @@ li {
 }
 
 li img {
-  height: 10vh;
+  height: 5vw;
 }
 
 .coins {
@@ -214,4 +214,24 @@ a.disabled{
 
 #budget {
   width: 20vw;
+}
+
+.bill {
+  width: 20vw!important;
+}
+
+#fallMoneyArea img {
+  width: 7vw;
+  opacity : 0.5;
+  position: absolute;
+  animation: money 1.5s linear infinite;
+}
+
+@keyframes money {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
 }
