@@ -50,7 +50,7 @@
         <div class="modalContents">
           <h1>いくら使いましたか？</h1>
           <form id="budgetForm" name="budgetForm" onsubmit="return false;">
-            ¥<input id="budget" type="number" name="budget" placeholder="0">
+            ¥<input id="budget" type="number" name="budget" placeholder="0" min="1">
             <input type="submit" value="記録">
           </form>
         </div>
@@ -63,7 +63,7 @@
       <div class="modalWrapper">
         <div class="modalContents">
           <h1>1ヶ月に使えるお金をいくらに変更しますか？</h1>
-          <form id="changeBudgetForm" action="top.html" method="post">
+          <form id="changeBudgetForm">
             ¥<input id="changeBudget" type="number" name="budget" placeholder="1ヶ月の予算（¥）" min="1">
             <input type="submit" value="変更">
           </form>

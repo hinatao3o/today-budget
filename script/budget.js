@@ -196,7 +196,7 @@ async function saveBudgetAfterUse(monthlyBudgets, useAmount) {
         moneyImg.src        = './images/money_'+key+'.png';
         moneyImg.id         = '1-'+i;
         moneyImg.style.left =  Math.floor(Math.random() * (document.documentElement.clientWidth+1))+'px';
-        moneyImg.style.top  =  '-'+Math.floor(Math.random() * (101))+'px';
+        moneyImg.style.top  =  '-'+Math.floor(Math.random() * (201))+'px';
         if (key >= 1000) moneyImg.classList.add('bill');
         fallMoneyArea.appendChild(moneyImg);
       }

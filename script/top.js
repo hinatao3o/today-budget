@@ -19,5 +19,6 @@ if (localStorage.budget) window.location.href = 'index.html';
   form.addEventListener("submit", function(event) {
     var input = document.querySelector("#budget");
     localStorage.setItem('budget', input.value);
+    window.location.href = './index.html';
   });
 }());
